@@ -8,7 +8,7 @@ in this scenario we are doing the `developer` deployment...which not sure what i
 
 <https://docs.openstack.org/kolla-ansible/latest/user/quickstart.html>
 
-***SPOILER ALERT!!!*** absolutely nothing different from what we could tell...very curious, maybe they sued to deviate?
+***SPOILER ALERT!!!*** absolutely nothing different from what we could tell...very curious, maybe they used to deviate?
 
 ## post os install
 
@@ -166,6 +166,8 @@ kolla-ansible bootstrap-servers -i ./all-in-one && \
 kolla-ansible prechecks -i ./all-in-one && \
 kolla-ansible deploy -i ./all-in-one
 ```
+
+>had to re=run the last one, sounded like a temporary internet/server glitch outside of my control
 
 finally finished, powerer off and take a snapshot!
 
