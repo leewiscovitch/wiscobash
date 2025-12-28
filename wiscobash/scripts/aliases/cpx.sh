@@ -1,0 +1,1 @@
+alias cpx="rsync -ah --info=progress2"

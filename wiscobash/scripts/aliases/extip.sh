@@ -1,0 +1,1 @@
+alias extip="curl ifconfig.co -4"

@@ -1,0 +1,1 @@
+alias meminfo="free -mlth"

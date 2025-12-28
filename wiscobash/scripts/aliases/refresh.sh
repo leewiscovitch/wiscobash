@@ -1,0 +1,1 @@
+alias refresh="source ~/.bashrc"

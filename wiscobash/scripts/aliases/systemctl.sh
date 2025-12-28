@@ -1,0 +1,7 @@
+alias sysd-enable="sudo systemctl enable --now"
+alias sysd-disable="sudo systemctl disable"
+alias sysd-start="sudo systemctl start"
+alias sysd-stop="sudo systemctl stop"
+alias sysd-restart="sudo systemctl restart"
+alias sysd-status="sudo systemctl status"
+alias sysd-reload="sudo systemctl daemon-reload"

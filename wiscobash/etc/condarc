@@ -1,0 +1,10 @@
+channel_priority: strict
+channels:
+  - conda-forge
+  - defaults
+default_channels:
+  - https://repo.anaconda.com/pkgs/main
+envs_dirs:
+  - ~/wiscobash/envs
+auto_activate: false
+EOF

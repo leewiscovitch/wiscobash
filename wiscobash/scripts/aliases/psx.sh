@@ -1,0 +1,1 @@
+alias psx="sudo ps auxf"
