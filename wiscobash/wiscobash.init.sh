@@ -64,6 +64,8 @@ bash ~/wiscobash/opt/miniconda/installer.sh -b -u -m -p ~/wiscobash/opt/minicond
 
 #cockpit
 
+<https://wiki.archlinux.org/title/Cockpit>
+
 ##install application
 sudo dnf install -y cockpit cockpit-files cockpit-podman cockpit-selinux cockpit-machines libvirt && \
 sudo systemctl enable --now cockpit.socket && \
