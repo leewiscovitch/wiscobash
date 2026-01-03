@@ -7,7 +7,8 @@ we'll be relying on the built-in kvm hypervisor, using `virt-manager` to adminis
 ### install
 
 ```shell
-sudo dnf install -y virt-manager libguestfs cloud-init
+sudo dnf install -y virt-manager libguestfs cloud-init && \
+sudo systemctl start libvirtd
 ```
 
 ### directories
