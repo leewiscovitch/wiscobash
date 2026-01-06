@@ -6,9 +6,8 @@ these are parts from the old wiscobash that need to be integrated
 
 ## set system context for normal user
 
-```shell
-export LIBVIRT_DEFAULT_URI="qemu:///system"
-```
+
+
 
 # init
 
@@ -47,8 +46,7 @@ sudo dnf install -y ansible ansible-collection-community-general
 sudo dnf install -y virt-manager libguestfs cloud-init
 
 ##add user to groups
-sudo usermod -aG libvirt $USER && \
-sudo usermod -aG kvm $USER
+sudo usermod -aG libvirt,kvm $USER
 
 ##storage pools
 virsh pool-define-as --name wiscobash-cloud --type dir --target /home/tech/wiscobash/virt/boot && \
