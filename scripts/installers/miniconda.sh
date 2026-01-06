@@ -115,6 +115,8 @@ conda deactivate 2>/dev/null
 alias ca='conda activate'
 alias cda='conda deactivate'
 alias cenv='conda env list'
+alias ccreate='conda create -n'
+alias cdel='conda env remove -n'
 alias cup='conda update --all'
 alias cpkg='conda list'
 EOF
@@ -129,11 +131,13 @@ EOF
     echo "  Config: $condarc"
     echo ""
     echo "Aliases available after restart:"
-    echo "  ca <env>  - Activate environment"
-    echo "  cda       - Deactivate environment"
-    echo "  cenv      - List environments"
-    echo "  cup       - Update all packages"
-    echo "  cpkg      - List installed packages"
+    echo "  ca <env>      - Activate environment"
+    echo "  cda           - Deactivate environment"
+    echo "  cenv          - List environments"
+    echo "  ccreate <env> - Create new environment"
+    echo "  cdel <env>    - Delete environment"
+    echo "  cup           - Update all packages"
+    echo "  cpkg          - List installed packages"
     echo ""
     echo "Note: Run 'wb_refresh' to activate conda in current shell"
     wb_log_package_install "miniconda" "success"
