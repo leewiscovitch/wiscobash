@@ -90,11 +90,18 @@ wb_get_package_name() {
     return 0
 }
 
-# wb_install - Install a package by generic ID
+# wb_reload_applications - Reload application-specific scripts
+# Used after installing new packages to load their aliases/functions
+wb_reload_applications() {
+    wb_log_info "Reloading application scripts..."
+    for f in "$WISCOBASH_DIR/scripts/applications"/*.sh; do
+        [ -f "$f" ] && source "$f" 2>/dev/null
+    done
+}
+
+# wb_install_single - Install a single package (internal function)
 # Args: $1 = package ID, $2 = optional "--force" flag
-# Returns: 0 on success, 1 on failure
-# Example: wb_install docker
-wb_install() {
+wb_install_single() {
     local pkg="$1" force=false
     [ "$2" = "--force" ] && force=true
     wb_log_section_start "Install: $pkg"
@@ -110,19 +117,51 @@ wb_install() {
     echo "Installing $pkg ($name)..."
     wb_log_info "Installing $pkg as $name"
     case "$DISTRO_FAMILY" in
-        debian) sudo apt-get install -y "$name" && wb_mark_installed "$pkg" && echo "✓ Installed $pkg" && wb_log_package_install "$pkg" "success" && return 0 ;;
-        rhel) (sudo dnf install -y "$name" 2>/dev/null || sudo yum install -y "$name") && wb_mark_installed "$pkg" && echo "✓ Installed $pkg" && wb_log_package_install "$pkg" "success" && return 0 ;;
-        arch) sudo pacman -S --noconfirm "$name" && wb_mark_installed "$pkg" && echo "✓ Installed $pkg" && wb_log_package_install "$pkg" "success" && return 0 ;;
+        debian) sudo apt-get install -y "$name" && wb_mark_installed "$pkg" && echo "✓ Installed $pkg" && wb_log_package_install "$pkg" "success" && wb_log_section_end "Install: $pkg" "success" && return 0 ;;
+        rhel) (sudo dnf install -y "$name" 2>/dev/null || sudo yum install -y "$name") && wb_mark_installed "$pkg" && echo "✓ Installed $pkg" && wb_log_package_install "$pkg" "success" && wb_log_section_end "Install: $pkg" "success" && return 0 ;;
+        arch) sudo pacman -S --noconfirm "$name" && wb_mark_installed "$pkg" && echo "✓ Installed $pkg" && wb_log_package_install "$pkg" "success" && wb_log_section_end "Install: $pkg" "success" && return 0 ;;
     esac
     echo "✗ Failed: $pkg"
     wb_log_package_install "$pkg" "failed"
+    wb_log_section_end "Install: $pkg" "failed"
     return 1
 }
 
-# wb_install_multi - Install multiple packages
+# wb_install - Install one or more packages
+# Args: package IDs (accepts multiple)
+# Returns: 0 on success, 1 if any failed
+# Example: wb_install docker
+# Example: wb_install bat ripgrep htop
+wb_install() {
+    [ $# -eq 0 ] && echo "Usage: wb_install <package> [package2 ...]" && return 1
+
+    local failed=0
+    local installed_any=false
+
+    # Install each package
+    for pkg in "$@"; do
+        if wb_install_single "$pkg"; then
+            installed_any=true
+        else
+            failed=$((failed + 1))
+        fi
+    done
+
+    # Reload application scripts if any packages were installed
+    if $installed_any; then
+        echo ""
+        echo "Reloading application aliases..."
+        wb_reload_applications
+    fi
+
+    return $failed
+}
+
+# wb_install_multi - Install multiple packages (legacy wrapper)
 # Args: List of package IDs
+# Note: wb_install now handles multiple packages, so this just calls it
 # Example: wb_install_multi git curl docker
-wb_install_multi() { for p in "$@"; do wb_install "$p" || echo "Failed: $p"; done; }
+wb_install_multi() { wb_install "$@"; }
 
 # wb_check - Check installation status of packages
 # Args: List of package IDs
