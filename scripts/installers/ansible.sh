@@ -10,22 +10,38 @@ wb_install_ansible() {
 
     case "$DISTRO_FAMILY" in
         debian)
-            # Debian/Ubuntu require pip installation
-            echo "Installing ansible via pip3..."
+            # Try apt first (ansible is available in Ubuntu 24.04+ repos)
+            echo "Checking for ansible in apt repositories..."
+            if apt-cache show ansible >/dev/null 2>&1; then
+                echo "Installing ansible via apt..."
+                if sudo apt-get install -y ansible; then
+                    wb_mark_installed "ansible"
+                    echo "✓ Installed ansible via apt"
+                    wb_log_package_install "ansible" "success"
+                    wb_log_section_end "Install ansible" "success"
+                    return 0
+                fi
+            fi
 
-            # Check if pip3 is available
-            if ! command -v pip3 >/dev/null 2>&1; then
-                echo "Error: pip3 not found. Installing python3-pip first..."
-                wb_install python-pip || {
-                    echo "✗ Failed to install python3-pip"
-                    wb_log_error "Failed to install python3-pip (required for ansible)"
+            # If not in repos, try pipx (recommended for newer Ubuntu/Debian)
+            echo "ansible not in apt repos, trying pipx..."
+
+            # Check if pipx is available, install if needed
+            if ! command -v pipx >/dev/null 2>&1; then
+                echo "Installing pipx..."
+                sudo apt-get install -y pipx || {
+                    echo "✗ Failed to install pipx"
+                    wb_log_error "Failed to install pipx (required for ansible)"
                     wb_log_section_end "Install ansible" "failed"
                     return 1
                 }
+                # Ensure pipx path is set up
+                pipx ensurepath >/dev/null 2>&1
             fi
 
-            # Install ansible via pip3
-            if pip3 install --user ansible; then
+            # Install ansible via pipx
+            echo "Installing ansible via pipx..."
+            if pipx install ansible; then
                 # Add ~/.local/bin to PATH if not already there
                 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
                     export PATH="$HOME/.local/bin:$PATH"
@@ -33,7 +49,7 @@ wb_install_ansible() {
                 fi
 
                 wb_mark_installed "ansible"
-                echo "✓ Installed ansible via pip3"
+                echo "✓ Installed ansible via pipx"
                 wb_log_package_install "ansible" "success"
                 wb_log_section_end "Install ansible" "success"
                 return 0
