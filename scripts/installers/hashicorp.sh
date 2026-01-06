@@ -38,11 +38,23 @@ wb_add_hashicorp_repo() {
         rhel)
             # Add HashiCorp repository for RHEL/Fedora/CentOS
             sudo dnf install -y dnf-plugins-core 2>/dev/null || sudo yum install -y yum-utils
-            sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/fedora/hashicorp.repo 2>/dev/null || \
-                sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+
+            # Use appropriate repo URL based on distro
+            if [ "$DISTRO" = "fedora" ]; then
+                sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/fedora/hashicorp.repo 2>/dev/null
+            else
+                sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo 2>/dev/null || \
+                    sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo 2>/dev/null
+            fi
+
+            # Test if the repo actually works by checking metadata
+            if ! sudo dnf makecache --repo=hashicorp 2>/dev/null; then
+                wb_log_warning "HashiCorp repo added but metadata unavailable (unsupported version)"
+                return 1
+            fi
 
             HASHICORP_REPO_ADDED=true
-            wb_log_success "HashiCorp repository added"
+            wb_log_success "HashiCorp repository added and verified"
             return 0
             ;;
 
