@@ -8,12 +8,14 @@
 #   ./install.sh --with-dev         # Install with dev tools
 #   ./install.sh --with-all         # Install with all packages
 #   ./install.sh --no-packages      # Install without packages (non-interactive)
+#   ./install.sh --force            # Force reinstall even if already installed
 
 set -e
 WISCOBASH_DIR="$HOME/wiscobash"
 BASHRC="$HOME/.bashrc"
 MARKER="# >>> wiscobash initialize >>>"
 PACKAGE_MODE=""
+FORCE_INSTALL=false
 
 # Parse command-line arguments
 while [ $# -gt 0 ]; do
@@ -34,6 +36,10 @@ while [ $# -gt 0 ]; do
             PACKAGE_MODE="skip"
             shift
             ;;
+        --force)
+            FORCE_INSTALL=true
+            shift
+            ;;
         --help|-h)
             echo "WiscoBash Installer"
             echo ""
@@ -44,6 +50,7 @@ while [ $# -gt 0 ]; do
             echo "  --with-dev          Install WiscoBash with dev tools"
             echo "  --with-all          Install WiscoBash with all packages"
             echo "  --no-packages       Install WiscoBash without installing packages"
+            echo "  --force             Force reinstall even if already installed"
             echo "  --help, -h          Show this help message"
             echo ""
             echo "If no option is provided, you'll be prompted to choose."
@@ -59,7 +66,19 @@ done
 
 echo "Installing WiscoBash..."
 [ ! -f "$WISCOBASH_DIR/install.sh" ] && echo "Error: Run from $WISCOBASH_DIR" && exit 1
-grep -q "$MARKER" "$BASHRC" 2>/dev/null && echo "Already installed. Run ./uninstall.sh first" && exit 1
+
+# Check if already installed (unless --force is used)
+if ! $FORCE_INSTALL && grep -q "$MARKER" "$BASHRC" 2>/dev/null; then
+    echo "Already installed. Use --force to reinstall or run ./uninstall.sh first"
+    exit 1
+fi
+
+# If force reinstalling, remove old markers first
+if $FORCE_INSTALL && grep -q "$MARKER" "$BASHRC" 2>/dev/null; then
+    echo "Force reinstalling (removing old installation)..."
+    # Remove old wiscobash block
+    sed -i '/# >>> wiscobash initialize >>>/,/# <<< wiscobash initialize <<<</ d' "$BASHRC"
+fi
 
 # Backup and install
 cp "$BASHRC" "$BASHRC.backup.$(date +%Y%m%d_%H%M%S)"

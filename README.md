@@ -24,6 +24,10 @@ source ~/.bashrc
 ./install.sh --with-all          # Install with all packages
 ./install.sh --no-packages       # Skip package installation
 
+# Force reinstall (useful for updates/repairs)
+./install.sh --force             # Reinstall even if already installed
+./install.sh --force --with-all  # Force reinstall with all packages
+
 # Install packages later
 ~/wiscobash/scripts/setup/essential_packages.sh
 ```
