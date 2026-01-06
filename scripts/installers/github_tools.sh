@@ -131,3 +131,66 @@ wb_install_micro_from_github() {
     echo "Installing micro from GitHub releases..."
     wb_install_micro_binary
 }
+
+# wb_install_eza_binary - Install eza from GitHub releases
+wb_install_eza_binary() {
+    local install_dir="$HOME/wiscobash/bin"
+    mkdir -p "$install_dir"
+
+    # Detect architecture
+    local arch
+    case "$(uname -m)" in
+        x86_64) arch="x86_64" ;;
+        aarch64|arm64) arch="aarch64" ;;
+        armv7l) arch="armv7" ;;
+        *) echo "Unsupported architecture: $(uname -m)"; return 1 ;;
+    esac
+
+    echo "Fetching latest eza version from GitHub..."
+    local version
+    version=$(curl -sL "https://api.github.com/repos/eza-community/eza/releases/latest" | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
+    [ -z "$version" ] && echo "Failed to fetch latest version" && return 1
+    echo "Latest version: $version"
+
+    local download_url="https://github.com/eza-community/eza/releases/download/v${version}/eza_${arch}-unknown-linux-musl.tar.gz"
+    local temp_dir=$(mktemp -d)
+
+    echo "Downloading eza $version..."
+    if ! curl -sL "$download_url" -o "$temp_dir/eza.tar.gz"; then
+        echo "Failed to download eza"
+        rm -rf "$temp_dir"
+        return 1
+    fi
+
+    echo "Extracting eza..."
+    tar -xzf "$temp_dir/eza.tar.gz" -C "$temp_dir"
+
+    # The eza binary should be directly in the temp directory
+    if [ ! -f "$temp_dir/eza" ]; then
+        echo "Failed to find eza binary"
+        rm -rf "$temp_dir"
+        return 1
+    fi
+
+    # Install binary
+    chmod +x "$temp_dir/eza"
+    cp "$temp_dir/eza" "$install_dir/eza"
+
+    # Cleanup
+    rm -rf "$temp_dir"
+
+    # Verify installation
+    if [ -x "$install_dir/eza" ]; then
+        echo "✓ Installed eza $version to $install_dir"
+        return 0
+    else
+        echo "✗ Failed to install eza"
+        return 1
+    fi
+}
+
+# wb_install_eza_from_github - Public function to install eza from GitHub
+wb_install_eza_from_github() {
+    echo "Installing eza from GitHub releases..."
+    wb_install_eza_binary
+}
