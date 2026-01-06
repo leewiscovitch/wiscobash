@@ -102,6 +102,17 @@ wb_install_starship() {
         starship preset gruvbox-rainbow -o "$config_dir/starship.toml"
         echo "✓ Installed gruvbox-rainbow preset"
 
+        # Configure right prompt to show conda environment
+        if grep -q "^right_format" "$config_dir/starship.toml"; then
+            # Update existing right_format
+            sed -i 's/^right_format.*/right_format = """$conda"""/' "$config_dir/starship.toml"
+        else
+            # Add right_format at the top
+            sed -i '1i right_format = """$conda"""' "$config_dir/starship.toml"
+            sed -i '1i # Right prompt: Show conda environment on right side' "$config_dir/starship.toml"
+        fi
+        echo "✓ Configured conda on right prompt"
+
         # Apply time format customization (12-hour with AM/PM)
         if grep -q "^\[time\]" "$config_dir/starship.toml"; then
             # Update existing [time] section
@@ -118,8 +129,10 @@ wb_install_starship() {
 
         # Apply conda customization (show base environment)
         if grep -q "^\[conda\]" "$config_dir/starship.toml"; then
-            # Update existing [conda] section
-            sed -i '/^\[conda\]/a ignore_base = false' "$config_dir/starship.toml"
+            # Update existing [conda] section - add ignore_base if not present
+            if ! grep -q "ignore_base" "$config_dir/starship.toml"; then
+                sed -i '/^\[conda\]/a ignore_base = false' "$config_dir/starship.toml"
+            fi
         else
             # Add [conda] section
             echo "" >> "$config_dir/starship.toml"
@@ -127,6 +140,20 @@ wb_install_starship() {
             echo "ignore_base = false" >> "$config_dir/starship.toml"
         fi
         echo "✓ Configured conda to show base environment"
+
+        # Configure directory to show full path
+        if grep -q "^\[directory\]" "$config_dir/starship.toml"; then
+            # Update existing [directory] section
+            sed -i '/^\[directory\]/a truncation_length = 0' "$config_dir/starship.toml"
+            sed -i '/^\[directory\]/a truncate_to_repo = false' "$config_dir/starship.toml"
+        else
+            # Add [directory] section
+            echo "" >> "$config_dir/starship.toml"
+            echo "[directory]" >> "$config_dir/starship.toml"
+            echo "truncation_length = 0" >> "$config_dir/starship.toml"
+            echo "truncate_to_repo = false" >> "$config_dir/starship.toml"
+        fi
+        echo "✓ Configured full path display"
     fi
 
     wb_mark_installed "starship"
