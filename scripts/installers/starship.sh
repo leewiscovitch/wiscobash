@@ -99,7 +99,7 @@ wb_install_starship() {
 
     # Copy WiscoBash custom theme
     if command -v starship >/dev/null 2>&1; then
-        cp "$WISCOBASH_DIR/config/starship.toml" "$config_dir/starship.toml"
+        cp -f "$WISCOBASH_DIR/config/starship.toml" "$config_dir/starship.toml"
         echo "✓ Installed WiscoBash custom theme"
         echo "  - Gruvbox colors"
         echo "  - Conda environment on right"
