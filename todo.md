@@ -4,14 +4,6 @@ these are parts from the old wiscobash that need to be integrated
 
 # environment variables
 
-## add folders to path
-
-`~/wiscobash/bin` will hold single-file third-party binaries
-
-```shell
-export PATH="/home/tech/wiscobash/bin:$PATH"
-```
-
 ## set system context for normal user
 
 ```shell

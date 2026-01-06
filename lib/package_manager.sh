@@ -118,6 +118,10 @@ wb_install_single() {
             wb_install_ansible
             return $?
             ;;
+        starship)
+            wb_install_starship
+            return $?
+            ;;
     esac
 
     local name
@@ -192,7 +196,7 @@ wb_packages_list() {
     echo "Available: git curl wget vim htop tree tmux docker docker-compose"
     echo "           python3 python-pip nodejs npm build-essential jq"
     echo "           unzip zip rsync openssh-server sqlite ansible"
-    echo "           btop ripgrep bat ncdu p7zip xmlstarlet micro eza"
+    echo "           btop ripgrep bat ncdu p7zip xmlstarlet micro eza starship"
 }
 
 # wb_reset_state - Clear package installation state (for debugging)
