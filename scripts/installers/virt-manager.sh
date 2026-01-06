@@ -222,8 +222,8 @@ EOF
 # virt-manager - Virtualization management
 # Sets LIBVIRT_DEFAULT_URI for system-level operations (required for Terraform)
 
-# Check if virt-manager is installed
-if ! command -v virt-manager >/dev/null 2>&1; then
+# Check if virsh is installed (works even if virt-manager GUI isn't available)
+if ! command -v virsh >/dev/null 2>&1; then
     return 0
 fi
 
