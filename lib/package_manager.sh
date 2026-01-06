@@ -126,6 +126,10 @@ wb_install_single() {
             wb_install_miniconda
             return $?
             ;;
+        vscode)
+            wb_install_vscode
+            return $?
+            ;;
     esac
 
     local name
