@@ -101,7 +101,7 @@ if [ -z "$PACKAGE_MODE" ]; then
     # Interactive mode - ask the user
     echo ""
     echo "Would you like to install packages?"
-    echo "1) Essential packages (git, curl, wget, vim, htop, tree, unzip, zip)"
+    echo "1) Essential packages (git, curl, wget, htop, tree, unzip, zip)"
     echo "2) Dev tools (tmux, jq, build-essential, python3, python-pip)"
     echo "3) CLI tools (btop, ripgrep, bat, ncdu, p7zip, xmlstarlet)"
     echo "4) All packages"
