@@ -1,1 +1,0 @@
-alias root="sudo -i"

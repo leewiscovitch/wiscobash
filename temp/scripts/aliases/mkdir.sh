@@ -1,1 +1,0 @@
-alias psx="mkdir -pv"

@@ -1,1 +1,0 @@
-alias editrc="nano ~/.bashrc"

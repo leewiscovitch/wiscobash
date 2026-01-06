@@ -1,1 +1,0 @@
-alias ports="sudo ss -tunlap"

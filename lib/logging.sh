@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# Logging module for WiscoBash
+# Provides structured logging with rotation, debug/verbose modes, and helper functions
+# Log file: ~/wiscobash/wiscobash.log (auto-rotates after 1000 lines)
+# Control flags: ~/wiscobash/.debug, ~/wiscobash/.verbose
+
 WISCOBASH_LOG_FILE="${WISCOBASH_DIR}/wiscobash.log"
 WISCOBASH_DEBUG_FLAG="${WISCOBASH_DIR}/.debug"
 WISCOBASH_VERBOSE_FLAG="${WISCOBASH_DIR}/.verbose"
@@ -7,6 +12,9 @@ WISCOBASH_VERBOSE=false
 [ -f "$WISCOBASH_DEBUG_FLAG" ] && WISCOBASH_DEBUG=true && WISCOBASH_VERBOSE=true
 [ -f "$WISCOBASH_VERBOSE_FLAG" ] && WISCOBASH_VERBOSE=true
 touch "$WISCOBASH_LOG_FILE" 2>/dev/null || WISCOBASH_LOG_FILE="/dev/null"
+
+# wb_rotate_log - Auto-rotate log file when it exceeds 1000 lines
+# Keeps the most recent 500 lines after rotation
 wb_rotate_log() {
     [ -f "$WISCOBASH_LOG_FILE" ] && [ "$WISCOBASH_LOG_FILE" != "/dev/null" ] || return
     local lines
@@ -14,14 +22,30 @@ wb_rotate_log() {
     [ "$lines" -gt 1000 ] && tail -n 500 "$WISCOBASH_LOG_FILE" > "${WISCOBASH_LOG_FILE}.tmp" && mv "${WISCOBASH_LOG_FILE}.tmp" "$WISCOBASH_LOG_FILE"
 }
 wb_timestamp() { date '+%Y-%m-%d %H:%M:%S'; }
+
+# Core logging functions
 wb_log() { echo "[$(wb_timestamp)] [$1] ${*:2}" >> "$WISCOBASH_LOG_FILE"; }
+
+# wb_log_info - Log informational message (shown if verbose mode enabled)
 wb_log_info() { wb_log "INFO" "$*"; $WISCOBASH_VERBOSE && echo "[INFO] $*" >&2; }
+
+# wb_log_success - Log success message (shown if verbose mode enabled)
 wb_log_success() { wb_log "SUCCESS" "$*"; $WISCOBASH_VERBOSE && echo "[✓] $*" >&2; }
+
+# wb_log_warning - Log warning message (shown if verbose mode enabled)
 wb_log_warning() { wb_log "WARNING" "$*"; $WISCOBASH_VERBOSE && echo "[WARNING] $*" >&2; }
+
+# wb_log_error - Log error message (always shown to user)
 wb_log_error() { wb_log "ERROR" "$*"; echo "[ERROR] $*" >&2; }
+
+# wb_log_debug - Log debug message (only if debug mode enabled)
 wb_log_debug() { $WISCOBASH_DEBUG && wb_log "DEBUG" "$*" && echo "[DEBUG] $*" >&2; }
+
+# Section logging helpers
 wb_log_section_start() { wb_log "SECTION" "START: $1"; wb_log_debug "Section: $1"; }
 wb_log_section_end() { wb_log "SECTION" "END: $1 (${2:-success})"; }
+
+# wb_log_session_start - Log session start with system info
 wb_log_session_start() {
     wb_rotate_log
     echo "" >> "$WISCOBASH_LOG_FILE"
@@ -37,6 +61,9 @@ wb_log_package_install() {
     [ "$2" = "skipped" ] && wb_log_info "Package skipped: $1"
     [ "$2" = "failed" ] && wb_log_error "Package failed: $1"
 }
+
+# wb_source_with_log - Source a file with logging and error handling
+# Args: $1 = file path, $2 = optional display name
 wb_source_with_log() {
     [ ! -f "$1" ] && wb_log_missing_file "$1" && return 1
     [ ! -r "$1" ] && wb_log_permission_error "$1" && return 1
@@ -49,14 +76,26 @@ wb_source_with_log() {
         return 1
     fi
 }
+# User-facing log management commands
+# wb_logs [N] - Show last N lines of log (default: 50)
 wb_logs() { [ -f "$WISCOBASH_LOG_FILE" ] && tail -n "${1:-50}" "$WISCOBASH_LOG_FILE" || echo "No log"; }
+
+# wb_logs_errors - Show recent error messages
 wb_logs_errors() { wb_logs 100 | grep ERROR; }
+
+# wb_logs_warnings - Show recent warnings and errors
 wb_logs_warnings() { wb_logs 100 | grep -E "WARNING|ERROR"; }
+
+# wb_logs_clear - Clear the log file
 wb_logs_clear() { true > "$WISCOBASH_LOG_FILE"; echo "Log cleared"; }
+
+# Debug/verbose mode toggles (require shell restart)
 wb_debug_enable() { touch "$WISCOBASH_DEBUG_FLAG"; echo "Debug enabled. Restart shell."; }
 wb_debug_disable() { rm -f "$WISCOBASH_DEBUG_FLAG"; echo "Debug disabled. Restart shell."; }
 wb_verbose_enable() { touch "$WISCOBASH_VERBOSE_FLAG"; echo "Verbose enabled. Restart shell."; }
 wb_verbose_disable() { rm -f "$WISCOBASH_VERBOSE_FLAG"; echo "Verbose disabled. Restart shell."; }
+
+# wb_log_status - Show current logging configuration and stats
 wb_log_status() {
     echo "=== WiscoBash Logging ==="
     echo "Log: $WISCOBASH_LOG_FILE"

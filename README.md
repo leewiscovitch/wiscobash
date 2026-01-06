@@ -55,4 +55,4 @@ wiscobash/
 │   └── setup/essential_packages.sh
 ```
 
-See full docs at https://github.com/yourusername/wiscobash
+See full docs at https://github.com/leewiscovitch/wiscobash

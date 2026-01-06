@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 export WISCOBASH_DIR="$HOME/wiscobash"
+# Source distro detection first (required by logging)
+[ -f "$WISCOBASH_DIR/lib/distro_detect.sh" ] && source "$WISCOBASH_DIR/lib/distro_detect.sh"
+# Source logging and start session
 [ -f "$WISCOBASH_DIR/lib/logging.sh" ] && source "$WISCOBASH_DIR/lib/logging.sh" && wb_log_session_start
-[ -f "$WISCOBASH_DIR/lib/distro_detect.sh" ] && wb_source_with_log "$WISCOBASH_DIR/lib/distro_detect.sh" "Distro"
+# Source package manager
 [ -f "$WISCOBASH_DIR/lib/package_manager.sh" ] && wb_source_with_log "$WISCOBASH_DIR/lib/package_manager.sh" "Packages"
 wb_log_section_start "Aliases"
 for f in "$WISCOBASH_DIR/scripts/alias"/*.sh; do [ -f "$f" ] && wb_source_with_log "$f" "$(basename "$f")"; done

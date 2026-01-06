@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 up() {
     local d="" limit="${1:-1}"
+    # Validate input is a positive integer
+    if ! [[ "$limit" =~ ^[0-9]+$ ]] || [ "$limit" -lt 1 ]; then
+        echo "Usage: up [N] - N must be a positive integer"
+        return 1
+    fi
     for ((i=1; i<=limit; i++)); do d="../$d"; done
     cd "$d" || return
 }

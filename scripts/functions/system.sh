@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-mkcd() { mkdir -p "$1" && cd "$1" || return; }
+mkcd() {
+    [ -z "$1" ] && echo "Usage: mkcd <directory>" && return 1
+    mkdir -p "$1" && cd "$1" || return
+}
 extract() {
     [ ! -f "$1" ] && echo "Not a file: $1" && return 1
     case "$1" in
@@ -17,10 +20,20 @@ extract() {
         *) echo "Cannot extract: $1" ;;
     esac
 }
-ff() { find . -type f -iname "*$1*"; }
-fd() { find . -type d -iname "*$1*"; }
+ff() {
+    [ -z "$1" ] && echo "Usage: ff <filename>" && return 1
+    find . -type f -iname "*$1*"
+}
+fd() {
+    [ -z "$1" ] && echo "Usage: fd <dirname>" && return 1
+    find . -type d -iname "*$1*"
+}
 usage() { du -h --max-depth=1 | sort -hr; }
-backup() { cp "$1" "$1.backup.$(date +%Y%m%d_%H%M%S)"; }
+backup() {
+    [ -z "$1" ] && echo "Usage: backup <file>" && return 1
+    [ ! -e "$1" ] && echo "File not found: $1" && return 1
+    cp "$1" "$1.backup.$(date +%Y%m%d_%H%M%S)"
+}
 sysinfo() {
     echo "=== System Info ==="
     echo "Host: $(hostname)"
