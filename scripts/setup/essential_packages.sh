@@ -12,7 +12,7 @@
 #   ./essential_packages.sh --skip           # Do nothing (for scripting)
 
 ESSENTIAL=(git curl wget htop tree unzip zip)
-DEV=(tmux jq build-essential python3 python-pip)
+DEV=(tmux jq build-essential python3 python-pip micro)
 CLI_TOOLS=(btop ripgrep bat ncdu p7zip xmlstarlet)
 
 install_essentials() {
@@ -76,7 +76,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
                 echo ""
                 echo "Options:"
                 echo "  --essentials    Install essential packages (git, curl, wget, htop, tree, unzip, zip)"
-                echo "  --dev           Install development tools (tmux, jq, build-essential, python3, python-pip)"
+                echo "  --dev           Install development tools (tmux, jq, build-essential, python3, python-pip, micro)"
                 echo "  --cli-tools     Install CLI tools (btop, ripgrep, bat, ncdu, p7zip, xmlstarlet)"
                 echo "  --all           Install all package groups"
                 echo "  --status        Show installed packages"
