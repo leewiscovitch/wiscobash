@@ -133,17 +133,22 @@ wb_install_starship() {
         fi
         echo "✓ Configured 12-hour time format"
 
-        # Apply conda customization (show base environment)
+        # Apply conda customization (show base environment and right-prompt friendly format)
         if grep -q "^\[conda\]" "$config_dir/starship.toml"; then
-            # Update existing [conda] section - add ignore_base if not present
+            # Update existing [conda] section
             if ! grep -q "ignore_base" "$config_dir/starship.toml"; then
                 sed -i '/^\[conda\]/a ignore_base = false' "$config_dir/starship.toml"
+            else
+                sed -i 's/ignore_base = .*/ignore_base = false/' "$config_dir/starship.toml"
             fi
+            # Replace format with simpler one for right prompt
+            sed -i '/^\[conda\]/,/^$/s|format = .*|format = "[$symbol$environment]($style)"|' "$config_dir/starship.toml"
         else
             # Add [conda] section
             echo "" >> "$config_dir/starship.toml"
             echo "[conda]" >> "$config_dir/starship.toml"
             echo "ignore_base = false" >> "$config_dir/starship.toml"
+            echo 'format = "[$symbol$environment]($style)"' >> "$config_dir/starship.toml"
         fi
         echo "✓ Configured conda to show base environment"
 
