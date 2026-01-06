@@ -8,8 +8,24 @@ Modular bash configuration for Debian, RHEL, and Arch-based Linux distributions.
 cd ~
 git clone https://github.com/leewiscovitch/wiscobash.git
 cd wiscobash
-./install.sh
+./install.sh              # Interactive - prompts for package installation
 source ~/.bashrc
+```
+
+### Installation Options
+
+```bash
+# Interactive (prompts for packages)
+./install.sh
+
+# Non-interactive modes
+./install.sh --with-essentials   # Install with essential packages
+./install.sh --with-dev          # Install with dev tools
+./install.sh --with-all          # Install with all packages
+./install.sh --no-packages       # Skip package installation
+
+# Install packages later
+~/wiscobash/scripts/setup/essential_packages.sh
 ```
 
 ## Features

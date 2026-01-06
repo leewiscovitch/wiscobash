@@ -1,11 +1,67 @@
 #!/usr/bin/env bash
+# WiscoBash Installer
+# Installs WiscoBash and optionally installs essential packages
+#
+# Usage:
+#   ./install.sh                    # Interactive installation
+#   ./install.sh --with-essentials  # Install with essential packages
+#   ./install.sh --with-dev         # Install with dev tools
+#   ./install.sh --with-all         # Install with all packages
+#   ./install.sh --no-packages      # Install without packages (non-interactive)
+
 set -e
 WISCOBASH_DIR="$HOME/wiscobash"
 BASHRC="$HOME/.bashrc"
 MARKER="# >>> wiscobash initialize >>>"
+PACKAGE_MODE=""
+
+# Parse command-line arguments
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --with-essentials)
+            PACKAGE_MODE="essentials"
+            shift
+            ;;
+        --with-dev)
+            PACKAGE_MODE="dev"
+            shift
+            ;;
+        --with-all)
+            PACKAGE_MODE="all"
+            shift
+            ;;
+        --no-packages)
+            PACKAGE_MODE="skip"
+            shift
+            ;;
+        --help|-h)
+            echo "WiscoBash Installer"
+            echo ""
+            echo "Usage: $0 [OPTION]"
+            echo ""
+            echo "Options:"
+            echo "  --with-essentials   Install WiscoBash with essential packages"
+            echo "  --with-dev          Install WiscoBash with dev tools"
+            echo "  --with-all          Install WiscoBash with all packages"
+            echo "  --no-packages       Install WiscoBash without installing packages"
+            echo "  --help, -h          Show this help message"
+            echo ""
+            echo "If no option is provided, you'll be prompted to choose."
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Run '$0 --help' for usage information"
+            exit 1
+            ;;
+    esac
+done
+
 echo "Installing WiscoBash..."
 [ ! -f "$WISCOBASH_DIR/install.sh" ] && echo "Error: Run from $WISCOBASH_DIR" && exit 1
 grep -q "$MARKER" "$BASHRC" 2>/dev/null && echo "Already installed. Run ./uninstall.sh first" && exit 1
+
+# Backup and install
 cp "$BASHRC" "$BASHRC.backup.$(date +%Y%m%d_%H%M%S)"
 cat >> "$BASHRC" << 'MARK'
 
@@ -13,4 +69,35 @@ cat >> "$BASHRC" << 'MARK'
 [ -f "$HOME/wiscobash/config/bashrc_additions" ] && source "$HOME/wiscobash/config/bashrc_additions"
 # <<< wiscobash initialize <<<<
 MARK
-echo "✓ Installed! Run: source ~/.bashrc"
+echo "✓ WiscoBash installed!"
+
+# Handle package installation
+if [ -z "$PACKAGE_MODE" ]; then
+    # Interactive mode - ask the user
+    echo ""
+    echo "Would you like to install packages?"
+    echo "1) Essential packages (git, curl, wget, vim, htop, tree, unzip, zip)"
+    echo "2) Dev tools (tmux, jq, build-essential, python3, python-pip)"
+    echo "3) Both"
+    echo "4) Skip (install later with ~/wiscobash/scripts/setup/essential_packages.sh)"
+    read -r -p "Choose [1-4]: " choice
+    case "$choice" in
+        1) PACKAGE_MODE="essentials" ;;
+        2) PACKAGE_MODE="dev" ;;
+        3) PACKAGE_MODE="all" ;;
+        *) PACKAGE_MODE="skip" ;;
+    esac
+fi
+
+# Install packages based on selection
+if [ "$PACKAGE_MODE" != "skip" ]; then
+    echo ""
+    echo "Loading WiscoBash libraries..."
+    source "$WISCOBASH_DIR/config/bashrc_additions"
+    echo ""
+    "$WISCOBASH_DIR/scripts/setup/essential_packages.sh" "--$PACKAGE_MODE"
+fi
+
+echo ""
+echo "✓ Installation complete!"
+echo "Run: source ~/.bashrc"
