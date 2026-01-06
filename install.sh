@@ -102,7 +102,7 @@ if [ -z "$PACKAGE_MODE" ]; then
     echo ""
     echo "Would you like to install packages?"
     echo "1) Essential packages (git, curl, wget, htop, tree, unzip, zip)"
-    echo "2) Dev tools (tmux, jq, build-essential, python3, python-pip, micro, ansible, starship)"
+    echo "2) Dev tools (tmux, jq, build-essential, python3, python-pip, micro, ansible, starship, miniconda)"
     echo "3) CLI tools (btop, ripgrep, bat, ncdu, p7zip, xmlstarlet, eza)"
     echo "4) All packages"
     echo "5) Skip (install later with ~/wiscobash/scripts/setup/essential_packages.sh)"

@@ -122,6 +122,10 @@ wb_install_single() {
             wb_install_starship
             return $?
             ;;
+        miniconda)
+            wb_install_miniconda
+            return $?
+            ;;
     esac
 
     local name
@@ -195,7 +199,7 @@ wb_check() { for p in "$@"; do wb_package_installed "$p" && echo "✓ $p" || ech
 wb_packages_list() {
     echo "Available: git curl wget vim htop tree tmux docker docker-compose"
     echo "           python3 python-pip nodejs npm build-essential jq"
-    echo "           unzip zip rsync openssh-server sqlite ansible"
+    echo "           unzip zip rsync openssh-server sqlite ansible miniconda"
     echo "           btop ripgrep bat ncdu p7zip xmlstarlet micro eza starship"
 }
 
