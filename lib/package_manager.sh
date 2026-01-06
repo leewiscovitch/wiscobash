@@ -134,6 +134,10 @@ wb_install_single() {
             wb_install_virt_manager
             return $?
             ;;
+        cockpit)
+            wb_install_cockpit
+            return $?
+            ;;
     esac
 
     local name
