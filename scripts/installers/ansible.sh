@@ -4,6 +4,52 @@
 # RHEL/Arch: Uses native package manager
 # Debian/Ubuntu: Uses pip3 (requires python3-pip)
 
+# wb_install_ansible_collection - Install community.general collection
+# Tries package manager first, falls back to ansible-galaxy
+wb_install_ansible_collection() {
+    local collection_name="community.general"
+    echo ""
+    echo "Installing ansible collection: $collection_name..."
+
+    case "$DISTRO_FAMILY" in
+        debian)
+            # Try apt package first
+            if apt-cache show ansible-collection-community-general >/dev/null 2>&1; then
+                echo "Installing via apt..."
+                if sudo apt-get install -y ansible-collection-community-general 2>/dev/null; then
+                    echo "✓ Installed $collection_name via apt"
+                    return 0
+                fi
+            fi
+            ;;
+        rhel)
+            # Try dnf/yum package first (available in EPEL)
+            echo "Installing via dnf..."
+            if sudo dnf install -y ansible-collection-community-general 2>/dev/null || sudo yum install -y ansible-collection-community-general 2>/dev/null; then
+                echo "✓ Installed $collection_name via dnf"
+                return 0
+            fi
+            ;;
+        arch)
+            # Try pacman package first
+            if sudo pacman -S --noconfirm ansible-collection-community-general 2>/dev/null; then
+                echo "✓ Installed $collection_name via pacman"
+                return 0
+            fi
+            ;;
+    esac
+
+    # Fall back to ansible-galaxy for all distros
+    echo "Package not available, using ansible-galaxy..."
+    if ansible-galaxy collection install "$collection_name"; then
+        echo "✓ Installed $collection_name via ansible-galaxy"
+        return 0
+    else
+        echo "⚠ Warning: Failed to install $collection_name collection"
+        return 1
+    fi
+}
+
 # wb_install_ansible - Install ansible using appropriate method for distro
 wb_install_ansible() {
     wb_log_section_start "Install ansible"
@@ -18,6 +64,10 @@ wb_install_ansible() {
                     wb_mark_installed "ansible"
                     echo "✓ Installed ansible via apt"
                     wb_log_package_install "ansible" "success"
+
+                    # Install community.general collection
+                    wb_install_ansible_collection
+
                     wb_log_section_end "Install ansible" "success"
                     return 0
                 fi
@@ -51,6 +101,10 @@ wb_install_ansible() {
                 wb_mark_installed "ansible"
                 echo "✓ Installed ansible via pipx"
                 wb_log_package_install "ansible" "success"
+
+                # Install community.general collection
+                wb_install_ansible_collection
+
                 wb_log_section_end "Install ansible" "success"
                 return 0
             else
@@ -70,6 +124,10 @@ wb_install_ansible() {
                 wb_mark_installed "ansible"
                 echo "✓ Installed ansible-core"
                 wb_log_package_install "ansible" "success"
+
+                # Install community.general collection
+                wb_install_ansible_collection
+
                 wb_log_section_end "Install ansible" "success"
                 return 0
             fi
@@ -80,6 +138,10 @@ wb_install_ansible() {
                 wb_mark_installed "ansible"
                 echo "✓ Installed ansible"
                 wb_log_package_install "ansible" "success"
+
+                # Install community.general collection
+                wb_install_ansible_collection
+
                 wb_log_section_end "Install ansible" "success"
                 return 0
             fi
@@ -97,6 +159,10 @@ wb_install_ansible() {
                 wb_mark_installed "ansible"
                 echo "✓ Installed ansible"
                 wb_log_package_install "ansible" "success"
+
+                # Install community.general collection
+                wb_install_ansible_collection
+
                 wb_log_section_end "Install ansible" "success"
                 return 0
             else
