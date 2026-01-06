@@ -128,3 +128,4 @@ fi
 echo ""
 echo "✓ Installation complete!"
 echo "Run: source ~/.bashrc"
+echo "     (or 'wb_refresh' for future reloads)"
