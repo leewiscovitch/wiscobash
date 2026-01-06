@@ -143,9 +143,18 @@ wb_install_starship() {
 
         # Configure directory to show full path
         if grep -q "^\[directory\]" "$config_dir/starship.toml"; then
-            # Update existing [directory] section
-            sed -i '/^\[directory\]/a truncation_length = 0' "$config_dir/starship.toml"
-            sed -i '/^\[directory\]/a truncate_to_repo = false' "$config_dir/starship.toml"
+            # Update existing [directory] section - replace values if they exist
+            if grep -q "^truncation_length" "$config_dir/starship.toml"; then
+                sed -i 's/^truncation_length = .*/truncation_length = 0/' "$config_dir/starship.toml"
+            else
+                sed -i '/^\[directory\]/a truncation_length = 0' "$config_dir/starship.toml"
+            fi
+
+            if grep -q "^truncate_to_repo" "$config_dir/starship.toml"; then
+                sed -i 's/^truncate_to_repo = .*/truncate_to_repo = false/' "$config_dir/starship.toml"
+            else
+                sed -i '/^\[directory\]/a truncate_to_repo = false' "$config_dir/starship.toml"
+            fi
         else
             # Add [directory] section
             echo "" >> "$config_dir/starship.toml"
