@@ -222,7 +222,6 @@ EOF
     echo "  LIBVIRT_DEFAULT_URI: qemu:///system (for Terraform compatibility)"
     echo ""
     echo "IMPORTANT: Log out and back in for group membership to take effect"
-    echo "           Then run 'wb_refresh' to activate libvirt environment"
     wb_log_package_install "virt-manager" "success"
     wb_log_section_end "Install virt-manager" "success"
     return 0
