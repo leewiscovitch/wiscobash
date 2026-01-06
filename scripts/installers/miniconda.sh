@@ -12,15 +12,14 @@ wb_install_miniconda() {
     local condarc="$etc_dir/condarc"
 
     # Check if already installed
+    local already_installed=false
     if [ -d "$install_dir" ] && [ -x "$install_dir/bin/conda" ]; then
         echo "✓ miniconda already installed: $($install_dir/bin/conda --version)"
-        wb_mark_installed "miniconda"
-        wb_log_package_install "miniconda" "skipped"
-        wb_log_section_end "Install miniconda" "skipped"
-        return 0
+        already_installed=true
     fi
 
-    echo "Installing miniconda..."
+    if ! $already_installed; then
+        echo "Installing miniconda..."
 
     # Detect architecture
     local arch
@@ -60,9 +59,14 @@ wb_install_miniconda() {
         return 1
     fi
 
-    # Clean up installer
-    rm -f "$install_dir/installer.sh"
-    echo "✓ Installed Miniconda to $install_dir"
+        # Clean up installer
+        rm -f "$install_dir/installer.sh"
+        echo "✓ Installed Miniconda to $install_dir"
+    fi
+
+    # Create directories if they don't exist
+    mkdir -p "$envs_dir"
+    mkdir -p "$etc_dir"
 
     # Create condarc configuration
     echo "Creating conda configuration..."
