@@ -62,20 +62,32 @@ wb_install_ansible() {
             ;;
 
         rhel)
-            # RHEL/Fedora/Rocky use native repos
-            echo "Installing ansible via dnf..."
+            # RHEL/Fedora/Rocky - package name changed to ansible-core in newer versions
+            echo "Installing ansible..."
+
+            # Try ansible-core first (RHEL 9+, Rocky 9+/10+, Fedora)
+            if sudo dnf install -y ansible-core 2>/dev/null || sudo yum install -y ansible-core 2>/dev/null; then
+                wb_mark_installed "ansible"
+                echo "✓ Installed ansible-core"
+                wb_log_package_install "ansible" "success"
+                wb_log_section_end "Install ansible" "success"
+                return 0
+            fi
+
+            # Fall back to ansible package (RHEL 8 and older)
+            echo "Trying ansible package..."
             if sudo dnf install -y ansible 2>/dev/null || sudo yum install -y ansible; then
                 wb_mark_installed "ansible"
                 echo "✓ Installed ansible"
                 wb_log_package_install "ansible" "success"
                 wb_log_section_end "Install ansible" "success"
                 return 0
-            else
-                echo "✗ Failed to install ansible"
-                wb_log_package_install "ansible" "failed"
-                wb_log_section_end "Install ansible" "failed"
-                return 1
             fi
+
+            echo "✗ Failed to install ansible"
+            wb_log_package_install "ansible" "failed"
+            wb_log_section_end "Install ansible" "failed"
+            return 1
             ;;
 
         arch)
