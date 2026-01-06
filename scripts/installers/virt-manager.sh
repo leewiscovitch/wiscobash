@@ -192,6 +192,27 @@ EOF
         fi
     fi
 
+    # Detect if running in a VM and blacklist KVM modules to prevent graphics conflicts
+    echo ""
+    echo "Checking if running in a virtual machine..."
+    if systemd-detect-virt --vm >/dev/null 2>&1; then
+        local virt_type=$(systemd-detect-virt --vm)
+        echo "⚠ Running in a virtual machine ($virt_type)"
+        echo "  Blacklisting KVM modules to prevent graphics driver conflicts"
+
+        sudo tee /etc/modprobe.d/blacklist-kvm.conf > /dev/null << 'EOF'
+# Blacklist KVM modules to prevent conflict with virtio_gpu in VM
+# This prevents GNOME/graphics crashes when virt-manager is installed in a VM
+blacklist kvm_intel
+blacklist kvm_amd
+blacklist kvm
+EOF
+        echo "✓ KVM modules blacklisted (nested virtualization disabled)"
+        echo "  Note: Reboot required for changes to take effect"
+    else
+        echo "✓ Running on bare metal - KVM modules will load normally"
+    fi
+
     # Create application script to set LIBVIRT_DEFAULT_URI
     echo ""
     echo "Creating libvirt environment configuration..."
@@ -221,7 +242,14 @@ EOF
     echo "  Storage pools created in: $virt_dir"
     echo "  LIBVIRT_DEFAULT_URI: qemu:///system (for Terraform compatibility)"
     echo ""
-    echo "IMPORTANT: Log out and back in for group membership to take effect"
+
+    # Show appropriate message based on VM detection
+    if systemd-detect-virt --vm >/dev/null 2>&1; then
+        echo "IMPORTANT: Reboot required to apply KVM module blacklist (prevents graphics conflicts)"
+    else
+        echo "IMPORTANT: Log out and back in for group membership to take effect"
+    fi
+
     wb_log_package_install "virt-manager" "success"
     wb_log_section_end "Install virt-manager" "success"
     return 0
