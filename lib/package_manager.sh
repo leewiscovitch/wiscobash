@@ -74,13 +74,8 @@ wb_get_package_name() {
                 debian) name="redis-tools" ;;
                 *) name="redis" ;;
             esac ;;
-        btop|ripgrep|ncdu|xmlstarlet)
+        btop|ripgrep|bat|ncdu|xmlstarlet)
             name="$pkg" ;;
-        bat)
-            case "$DISTRO_FAMILY" in
-                debian) name="batcat" ;;
-                *) name="bat" ;;
-            esac ;;
         p7zip)
             case "$DISTRO_FAMILY" in
                 debian) name="p7zip-full" ;;
