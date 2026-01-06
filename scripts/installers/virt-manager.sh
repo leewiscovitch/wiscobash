@@ -34,6 +34,21 @@ wb_install_virt_manager() {
                 ;;
 
             rhel)
+                # Ensure EPEL is installed (virt-manager requires it on RHEL/Rocky)
+                echo "Checking for EPEL repository..."
+                if ! rpm -q epel-release >/dev/null 2>&1; then
+                    echo "Installing EPEL repository..."
+                    if sudo dnf install -y epel-release 2>/dev/null || sudo yum install -y epel-release; then
+                        echo "✓ EPEL repository installed"
+                        # Refresh repo metadata
+                        sudo dnf makecache 2>/dev/null || sudo yum makecache
+                    else
+                        echo "⚠ Warning: Could not install EPEL repository"
+                    fi
+                else
+                    echo "✓ EPEL repository already installed"
+                fi
+
                 # Install virt-manager and all dependencies
                 if sudo dnf install -y \
                     virt-manager \
