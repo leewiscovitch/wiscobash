@@ -1,5 +1,5 @@
 # WiscoBash Starship Theme
-# Custom theme with gruvbox colors, full paths
+# Gruvbox colors with powerline arrows, full paths, conda environment, 12-hour time
 
 # Main prompt format
 format = """

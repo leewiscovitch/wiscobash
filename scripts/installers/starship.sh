@@ -101,8 +101,8 @@ wb_install_starship() {
     if command -v starship >/dev/null 2>&1; then
         \cp -f "$WISCOBASH_DIR/config/starship.toml" "$config_dir/starship.toml"
         echo "✓ Installed WiscoBash custom theme"
-        echo "  - Gruvbox colors"
-        echo "  - Conda environment on right"
+        echo "  - Gruvbox colors with powerline arrows"
+        echo "  - Conda environment visible"
         echo "  - Full path display"
         echo "  - 12-hour time format"
     fi
