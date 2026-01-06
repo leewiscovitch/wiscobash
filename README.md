@@ -35,17 +35,24 @@ source ~/.bashrc
 ## Features
 
 - Cross-distribution package management
+- HashiCorp tools installer (terraform, packer, vault, consul, nomad)
 - Modular aliases, functions, and app configs
 - Smart logging with debug/verbose modes
 - State tracking for installed packages
+- Custom binary installation to ~/wiscobash/bin
 
 ## Usage
 
 ```bash
-# Package management
+# Package management (standard repos)
 wb_install git
 wb_install_multi curl vim htop
 wb_check docker
+
+# HashiCorp tools (terraform, packer, vault, etc.)
+wb_install_terraform          # Install latest terraform
+wb_install_packer             # Install latest packer
+wb_install_terraform 1.6.0    # Install specific version
 
 # View logs
 wb_logs
@@ -66,12 +73,14 @@ up, goto, tree
 ```
 wiscobash/
 ├── install.sh, uninstall.sh
+├── bin/                                         # Custom binaries (in PATH)
 ├── config/bashrc_additions
 ├── lib/{distro_detect,logging,package_manager}.sh
 ├── scripts/
 │   ├── alias/{common,git}.sh
 │   ├── functions/{system,navigation}.sh
 │   ├── applications/docker.sh
+│   ├── installers/hashicorp.sh                  # HashiCorp tools installer
 │   └── setup/essential_packages.sh
 ```
 

@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 export WISCOBASH_DIR="$HOME/wiscobash"
+
+# Add WiscoBash bin to PATH
+export PATH="$WISCOBASH_DIR/bin:$PATH"
+
 # Source distro detection first (required by logging)
 [ -f "$WISCOBASH_DIR/lib/distro_detect.sh" ] && source "$WISCOBASH_DIR/lib/distro_detect.sh"
 # Source logging and start session
@@ -15,4 +19,7 @@ wb_log_section_end "Functions" "success"
 wb_log_section_start "Applications"
 for f in "$WISCOBASH_DIR/scripts/applications"/*.sh; do [ -f "$f" ] && wb_source_with_log "$f" "$(basename "$f")"; done
 wb_log_section_end "Applications" "success"
+wb_log_section_start "Installers"
+for f in "$WISCOBASH_DIR/scripts/installers"/*.sh; do [ -f "$f" ] && wb_source_with_log "$f" "$(basename "$f")"; done
+wb_log_section_end "Installers" "success"
 wb_log_info "WiscoBash ready"
