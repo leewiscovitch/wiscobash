@@ -1,8 +1,5 @@
 # WiscoBash Starship Theme
-# Custom theme with gruvbox colors, conda on right, full paths
-
-# Show conda environment on the right side
-right_format = """$conda"""
+# Custom theme with gruvbox colors, full paths
 
 # Main prompt format
 format = """
@@ -32,6 +29,7 @@ $docker_context\
 [](fg:color_bg3 bg:color_bg1)\
 $time\
 [ ](fg:color_bg1)\
+$conda\
 $line_break$character"""
 
 # Gruvbox color palette
