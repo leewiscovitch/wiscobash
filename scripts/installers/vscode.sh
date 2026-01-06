@@ -26,7 +26,7 @@ wb_install_vscode() {
             # Add Microsoft GPG key
             wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/packages.microsoft.gpg
             sudo install -D -o root -g root -m 644 /tmp/packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-            rm /tmp/packages.microsoft.gpg
+            rm -f /tmp/packages.microsoft.gpg
 
             # Add repository
             echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | \
