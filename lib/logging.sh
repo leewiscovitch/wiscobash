@@ -57,9 +57,11 @@ wb_log_session_start() {
 wb_log_missing_file() { wb_log_warning "Missing file: $1"; }
 wb_log_permission_error() { wb_log_error "Permission denied: $1"; }
 wb_log_package_install() {
-    [ "$2" = "success" ] && wb_log_success "Package installed: $1"
-    [ "$2" = "skipped" ] && wb_log_info "Package skipped: $1"
-    [ "$2" = "failed" ] && wb_log_error "Package failed: $1"
+    case "$2" in
+        success) wb_log_success "Package installed: $1" ;;
+        skipped) wb_log_info "Package skipped: $1" ;;
+        failed) wb_log_error "Package failed: $1" ;;
+    esac
 }
 
 # wb_source_with_log - Source a file with logging and error handling
