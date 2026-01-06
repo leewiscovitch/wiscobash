@@ -13,7 +13,7 @@
 
 ESSENTIAL=(git curl wget vim htop tree unzip zip)
 DEV=(tmux jq build-essential python3 python-pip)
-CLI_TOOLS=(btop ripgrep bat ncdu p7zip-gui xmlstarlet)
+CLI_TOOLS=(btop ripgrep bat ncdu p7zip xmlstarlet)
 
 install_essentials() {
     echo "=== Installing Essentials ==="
@@ -77,7 +77,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
                 echo "Options:"
                 echo "  --essentials    Install essential packages (git, curl, wget, vim, htop, tree, unzip, zip)"
                 echo "  --dev           Install development tools (tmux, jq, build-essential, python3, python-pip)"
-                echo "  --cli-tools     Install CLI tools (btop, ripgrep, bat, ncdu, p7zip-gui, xmlstarlet)"
+                echo "  --cli-tools     Install CLI tools (btop, ripgrep, bat, ncdu, p7zip, xmlstarlet)"
                 echo "  --all           Install all package groups"
                 echo "  --status        Show installed packages"
                 echo "  --skip          Skip package installation"

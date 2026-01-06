@@ -74,9 +74,14 @@ wb_get_package_name() {
                 debian) name="redis-tools" ;;
                 *) name="redis" ;;
             esac ;;
-        btop|ripgrep|bat|ncdu|xmlstarlet)
+        btop|ripgrep|ncdu|xmlstarlet)
             name="$pkg" ;;
-        p7zip-gui)
+        bat)
+            case "$DISTRO_FAMILY" in
+                debian) name="batcat" ;;
+                *) name="bat" ;;
+            esac ;;
+        p7zip)
             case "$DISTRO_FAMILY" in
                 debian) name="p7zip-full" ;;
                 rhel) name="p7zip p7zip-plugins" ;;
@@ -173,7 +178,7 @@ wb_packages_list() {
     echo "Available: git curl wget vim htop tree tmux docker docker-compose"
     echo "           python3 python-pip nodejs npm build-essential jq"
     echo "           unzip zip rsync openssh-server sqlite"
-    echo "           btop ripgrep bat ncdu p7zip-gui xmlstarlet"
+    echo "           btop ripgrep bat ncdu p7zip xmlstarlet"
 }
 
 # wb_reset_state - Clear package installation state (for debugging)
