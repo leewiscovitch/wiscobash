@@ -62,3 +62,8 @@ wb_update() {
 
     echo "✓ WiscoBash updated and reloaded!"
 }
+wb_refresh() {
+    echo "Reloading WiscoBash..."
+    source "$HOME/.bashrc"
+    echo "✓ WiscoBash reloaded!"
+}
