@@ -16,10 +16,14 @@ touch "$WISCOBASH_LOG_FILE" 2>/dev/null || WISCOBASH_LOG_FILE="/dev/null"
 # wb_rotate_log - Auto-rotate log file when it exceeds 1000 lines
 # Keeps the most recent 500 lines after rotation
 wb_rotate_log() {
-    [ -f "$WISCOBASH_LOG_FILE" ] && [ "$WISCOBASH_LOG_FILE" != "/dev/null" ] || return
+    [ -f "$WISCOBASH_LOG_FILE" ] && [ "$WISCOBASH_LOG_FILE" != "/dev/null" ] || return 0
     local lines
     lines=$(wc -l < "$WISCOBASH_LOG_FILE" 2>/dev/null || echo 0)
-    [ "$lines" -gt 1000 ] && tail -n 500 "$WISCOBASH_LOG_FILE" > "${WISCOBASH_LOG_FILE}.tmp" && mv "${WISCOBASH_LOG_FILE}.tmp" "$WISCOBASH_LOG_FILE"
+    if [ "$lines" -gt 1000 ]; then
+        tail -n 500 "$WISCOBASH_LOG_FILE" > "${WISCOBASH_LOG_FILE}.tmp" && \
+            mv "${WISCOBASH_LOG_FILE}.tmp" "$WISCOBASH_LOG_FILE"
+    fi
+    return 0
 }
 wb_timestamp() { date '+%Y-%m-%d %H:%M:%S'; }
 
