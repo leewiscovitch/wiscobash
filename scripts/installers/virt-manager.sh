@@ -58,23 +58,23 @@ wb_install_virt_manager() {
                     echo "⚠ Warning: Could not install Virtualization Host group"
                 fi
 
-                # Install virt-manager and additional tools
-                if sudo dnf install -y \
-                    virt-manager \
+                # Install virt-manager and additional tools (virt-manager may not be available on all RHEL versions)
+                echo "Installing additional virtualization tools..."
+                sudo dnf install -y \
                     virt-viewer \
                     libguestfs \
                     cloud-init 2>/dev/null || \
                    sudo yum install -y \
-                    virt-manager \
                     virt-viewer \
                     libguestfs \
-                    cloud-init; then
-                    echo "✓ Installed virt-manager and dependencies"
+                    cloud-init
+
+                # Try to install virt-manager GUI (may not be available)
+                if sudo dnf install -y virt-manager 2>/dev/null || sudo yum install -y virt-manager 2>/dev/null; then
+                    echo "✓ Installed virt-manager GUI"
                 else
-                    echo "✗ Failed to install virt-manager"
-                    wb_log_package_install "virt-manager" "failed"
-                    wb_log_section_end "Install virt-manager" "failed"
-                    return 1
+                    echo "⚠ Warning: virt-manager GUI not available (command-line tools still work)"
+                    echo "  You can use virt-install and virsh for VM management"
                 fi
                 ;;
 
