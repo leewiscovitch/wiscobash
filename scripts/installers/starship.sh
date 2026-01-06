@@ -2,45 +2,47 @@
 # Starship Prompt Installer
 # Installs starship cross-shell prompt with FiraCode Nerd Font
 
-# wb_install_firacode_nerd_font - Download and install FiraCode Nerd Font
-wb_install_firacode_nerd_font() {
+# wb_install_nerd_font - Download and install a Nerd Font
+# Args: $1 = font name (e.g., "FiraCode", "Hack", "JetBrainsMono")
+wb_install_nerd_font() {
+    local font_name="${1:-FiraCode}"
     local font_dir="$HOME/.local/share/fonts"
     mkdir -p "$font_dir"
 
-    echo "Checking for FiraCode Nerd Font..."
+    echo "Checking for ${font_name} Nerd Font..."
 
     # Check if already installed
-    if fc-list | grep -qi "FiraCode Nerd Font"; then
-        echo "✓ FiraCode Nerd Font already installed"
+    if fc-list | grep -qi "${font_name} Nerd Font"; then
+        echo "✓ ${font_name} Nerd Font already installed"
         return 0
     fi
 
-    echo "Installing FiraCode Nerd Font..."
+    echo "Installing ${font_name} Nerd Font..."
 
     # Get latest release version
     local version
     version=$(curl -sL "https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest" | grep '"tag_name"' | sed -E 's/.*"v?([^"]+)".*/\1/')
     [ -z "$version" ] && echo "⚠ Warning: Could not fetch latest version, using v3.1.1" && version="3.1.1"
 
-    local download_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${version}/FiraCode.zip"
+    local download_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${version}/${font_name}.zip"
     local temp_dir=$(mktemp -d)
 
-    echo "Downloading FiraCode Nerd Font v${version}..."
-    if ! curl -sL "$download_url" -o "$temp_dir/FiraCode.zip"; then
-        echo "✗ Failed to download FiraCode Nerd Font"
+    echo "Downloading ${font_name} Nerd Font v${version}..."
+    if ! curl -sL "$download_url" -o "$temp_dir/${font_name}.zip"; then
+        echo "✗ Failed to download ${font_name} Nerd Font"
         rm -rf "$temp_dir"
         return 1
     fi
 
     echo "Extracting fonts..."
-    unzip -q "$temp_dir/FiraCode.zip" -d "$temp_dir/FiraCode" 2>/dev/null || {
+    unzip -q "$temp_dir/${font_name}.zip" -d "$temp_dir/${font_name}" 2>/dev/null || {
         echo "✗ Failed to extract font archive"
         rm -rf "$temp_dir"
         return 1
     }
 
     # Install only the ttf fonts (ignore Windows/OTF variants)
-    find "$temp_dir/FiraCode" -name "*.ttf" -exec cp {} "$font_dir/" \;
+    find "$temp_dir/${font_name}" -name "*.ttf" -exec cp {} "$font_dir/" \;
 
     # Update font cache
     if command -v fc-cache >/dev/null 2>&1; then
@@ -48,8 +50,13 @@ wb_install_firacode_nerd_font() {
     fi
 
     rm -rf "$temp_dir"
-    echo "✓ Installed FiraCode Nerd Font"
+    echo "✓ Installed ${font_name} Nerd Font"
     return 0
+}
+
+# wb_install_firacode_nerd_font - Legacy wrapper for FiraCode
+wb_install_firacode_nerd_font() {
+    wb_install_nerd_font "FiraCode"
 }
 
 # wb_install_starship - Install starship prompt
