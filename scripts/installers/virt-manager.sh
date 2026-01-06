@@ -146,15 +146,18 @@ wb_install_virt_manager() {
     mkdir -p "$virt_dir"/{wiscobash-cloud,wiscobash-iso,wiscobash-disks,wiscobash-nvram}
 
     # Define and start storage pools
-    # Note: Using sudo -u $USER to run virsh as the user, not root
+    # Use sg to run virsh with the libvirt group active (group membership not active until relogin)
     export LIBVIRT_DEFAULT_URI="qemu:///system"
 
     for pool in wiscobash-cloud wiscobash-iso wiscobash-disks wiscobash-nvram; do
-        if ! virsh pool-info "$pool" >/dev/null 2>&1; then
-            virsh pool-define-as --name "$pool" --type dir --target "$virt_dir/$pool" && \
-            virsh pool-start "$pool" && \
-            virsh pool-autostart "$pool" && \
-            echo "✓ Created and started storage pool: $pool"
+        if ! sg "$libvirt_group" -c "virsh pool-info '$pool'" >/dev/null 2>&1; then
+            if sg "$libvirt_group" -c "virsh pool-define-as --name '$pool' --type dir --target '$virt_dir/$pool' && \
+                virsh pool-start '$pool' && \
+                virsh pool-autostart '$pool'"; then
+                echo "✓ Created and started storage pool: $pool"
+            else
+                echo "⚠ Warning: Could not create storage pool: $pool"
+            fi
         else
             echo "✓ Storage pool already exists: $pool"
         fi
