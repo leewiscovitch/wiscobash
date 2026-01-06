@@ -97,83 +97,14 @@ wb_install_starship() {
     local config_dir="$HOME/.config"
     mkdir -p "$config_dir"
 
-    # Install gruvbox-rainbow preset
+    # Copy WiscoBash custom theme
     if command -v starship >/dev/null 2>&1; then
-        starship preset gruvbox-rainbow -o "$config_dir/starship.toml"
-        echo "✓ Installed gruvbox-rainbow preset"
-
-        # Configure right prompt to show conda environment
-        # First, remove conda from the main format string if it exists
-        if grep -q "^format" "$config_dir/starship.toml"; then
-            sed -i 's/\$conda//g' "$config_dir/starship.toml"
-        fi
-
-        # Add conda to right_format
-        if grep -q "^right_format" "$config_dir/starship.toml"; then
-            # Update existing right_format
-            sed -i 's/^right_format.*/right_format = """$conda"""/' "$config_dir/starship.toml"
-        else
-            # Add right_format at the top
-            sed -i '1i right_format = """$conda"""' "$config_dir/starship.toml"
-            sed -i '1i # Right prompt: Show conda environment on right side' "$config_dir/starship.toml"
-        fi
-        echo "✓ Configured conda on right prompt"
-
-        # Apply time format customization (12-hour with AM/PM)
-        if grep -q "^\[time\]" "$config_dir/starship.toml"; then
-            # Update existing [time] section
-            sed -i '/^\[time\]/,/^$/s/use_12hr = false/use_12hr = true/' "$config_dir/starship.toml"
-            sed -i '/^\[time\]/,/^$/s/disabled = true/disabled = false/' "$config_dir/starship.toml"
-        else
-            # Add [time] section if it doesn't exist
-            echo "" >> "$config_dir/starship.toml"
-            echo "[time]" >> "$config_dir/starship.toml"
-            echo "disabled = false" >> "$config_dir/starship.toml"
-            echo "use_12hr = true" >> "$config_dir/starship.toml"
-        fi
-        echo "✓ Configured 12-hour time format"
-
-        # Apply conda customization (show base environment and right-prompt friendly format)
-        if grep -q "^\[conda\]" "$config_dir/starship.toml"; then
-            # Update existing [conda] section
-            if ! grep -q "ignore_base" "$config_dir/starship.toml"; then
-                sed -i '/^\[conda\]/a ignore_base = false' "$config_dir/starship.toml"
-            else
-                sed -i 's/ignore_base = .*/ignore_base = false/' "$config_dir/starship.toml"
-            fi
-            # Replace format with simpler one for right prompt
-            sed -i '/^\[conda\]/,/^$/s|format = .*|format = "[$symbol$environment]($style)"|' "$config_dir/starship.toml"
-        else
-            # Add [conda] section
-            echo "" >> "$config_dir/starship.toml"
-            echo "[conda]" >> "$config_dir/starship.toml"
-            echo "ignore_base = false" >> "$config_dir/starship.toml"
-            echo 'format = "[$symbol$environment]($style)"' >> "$config_dir/starship.toml"
-        fi
-        echo "✓ Configured conda to show base environment"
-
-        # Configure directory to show full path
-        if grep -q "^\[directory\]" "$config_dir/starship.toml"; then
-            # Update existing [directory] section - replace values if they exist
-            if grep -q "^truncation_length" "$config_dir/starship.toml"; then
-                sed -i 's/^truncation_length = .*/truncation_length = 0/' "$config_dir/starship.toml"
-            else
-                sed -i '/^\[directory\]/a truncation_length = 0' "$config_dir/starship.toml"
-            fi
-
-            if grep -q "^truncate_to_repo" "$config_dir/starship.toml"; then
-                sed -i 's/^truncate_to_repo = .*/truncate_to_repo = false/' "$config_dir/starship.toml"
-            else
-                sed -i '/^\[directory\]/a truncate_to_repo = false' "$config_dir/starship.toml"
-            fi
-        else
-            # Add [directory] section
-            echo "" >> "$config_dir/starship.toml"
-            echo "[directory]" >> "$config_dir/starship.toml"
-            echo "truncation_length = 0" >> "$config_dir/starship.toml"
-            echo "truncate_to_repo = false" >> "$config_dir/starship.toml"
-        fi
-        echo "✓ Configured full path display"
+        cp "$WISCOBASH_DIR/config/starship.toml" "$config_dir/starship.toml"
+        echo "✓ Installed WiscoBash custom theme"
+        echo "  - Gruvbox colors"
+        echo "  - Conda environment on right"
+        echo "  - Full path display"
+        echo "  - 12-hour time format"
     fi
 
     wb_mark_installed "starship"
