@@ -103,6 +103,12 @@ wb_install_starship() {
         echo "✓ Installed gruvbox-rainbow preset"
 
         # Configure right prompt to show conda environment
+        # First, remove conda from the main format string if it exists
+        if grep -q "^format" "$config_dir/starship.toml"; then
+            sed -i 's/\$conda//g' "$config_dir/starship.toml"
+        fi
+
+        # Add conda to right_format
         if grep -q "^right_format" "$config_dir/starship.toml"; then
             # Update existing right_format
             sed -i 's/^right_format.*/right_format = """$conda"""/' "$config_dir/starship.toml"
