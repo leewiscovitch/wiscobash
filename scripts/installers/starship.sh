@@ -75,9 +75,13 @@ wb_install_starship() {
     if command -v starship >/dev/null 2>&1; then
         echo "✓ starship already installed: $(starship --version)"
     else
-        # Install using official installer
-        if curl -sS https://starship.rs/install.sh | sh -s -- -y; then
-            echo "✓ Installed starship"
+        # Install to ~/wiscobash/bin (no sudo required)
+        local install_dir="$HOME/wiscobash/bin"
+        mkdir -p "$install_dir"
+
+        # Install using official installer with custom bin directory
+        if curl -sS https://starship.rs/install.sh | sh -s -- -y --bin-dir "$install_dir"; then
+            echo "✓ Installed starship to $install_dir"
         else
             echo "✗ Failed to install starship"
             wb_log_package_install "starship" "failed"
