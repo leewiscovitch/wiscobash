@@ -49,20 +49,23 @@ wb_install_virt_manager() {
                     echo "✓ EPEL repository already installed"
                 fi
 
-                # Install virt-manager and all dependencies
+                # Install Virtualization Host group first (provides base packages)
+                echo "Installing Virtualization Host group..."
+                if sudo dnf groupinstall -y "Virtualization Host" 2>/dev/null || \
+                   sudo yum groupinstall -y "Virtualization Host"; then
+                    echo "✓ Installed Virtualization Host group"
+                else
+                    echo "⚠ Warning: Could not install Virtualization Host group"
+                fi
+
+                # Install virt-manager and additional tools
                 if sudo dnf install -y \
                     virt-manager \
-                    libvirt \
-                    qemu-kvm \
-                    virt-install \
                     virt-viewer \
                     libguestfs \
                     cloud-init 2>/dev/null || \
                    sudo yum install -y \
                     virt-manager \
-                    libvirt \
-                    qemu-kvm \
-                    virt-install \
                     virt-viewer \
                     libguestfs \
                     cloud-init; then
