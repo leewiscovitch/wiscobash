@@ -6,12 +6,14 @@
 #   ./essential_packages.sh                  # Interactive menu
 #   ./essential_packages.sh --essentials     # Install essential packages
 #   ./essential_packages.sh --dev            # Install dev tools
-#   ./essential_packages.sh --all            # Install both
+#   ./essential_packages.sh --cli-tools      # Install CLI tools
+#   ./essential_packages.sh --all            # Install all package groups
 #   ./essential_packages.sh --status         # Show installed packages
 #   ./essential_packages.sh --skip           # Do nothing (for scripting)
 
 ESSENTIAL=(git curl wget vim htop tree unzip zip)
 DEV=(tmux jq build-essential python3 python-pip)
+CLI_TOOLS=(btop ripgrep bat ncdu p7zip-gui xmlstarlet)
 
 install_essentials() {
     echo "=== Installing Essentials ==="
@@ -24,6 +26,13 @@ install_dev() {
     echo "=== Installing Dev Tools ==="
     local todo=()
     for p in "${DEV[@]}"; do wb_package_installed "$p" && echo "✓ $p" || todo+=("$p"); done
+    [ ${#todo[@]} -gt 0 ] && echo "Installing: ${todo[*]}" && wb_install_multi "${todo[@]}" || echo "All installed!"
+}
+
+install_cli_tools() {
+    echo "=== Installing CLI Tools ==="
+    local todo=()
+    for p in "${CLI_TOOLS[@]}"; do wb_package_installed "$p" && echo "✓ $p" || todo+=("$p"); done
     [ ${#todo[@]} -gt 0 ] && echo "Installing: ${todo[*]}" && wb_install_multi "${todo[@]}" || echo "All installed!"
 }
 
@@ -48,9 +57,13 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
             --dev)
                 install_dev
                 ;;
+            --cli-tools)
+                install_cli_tools
+                ;;
             --all)
                 install_essentials
                 install_dev
+                install_cli_tools
                 ;;
             --status)
                 show_status
@@ -64,7 +77,8 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
                 echo "Options:"
                 echo "  --essentials    Install essential packages (git, curl, wget, vim, htop, tree, unzip, zip)"
                 echo "  --dev           Install development tools (tmux, jq, build-essential, python3, python-pip)"
-                echo "  --all           Install both essentials and dev tools"
+                echo "  --cli-tools     Install CLI tools (btop, ripgrep, bat, ncdu, p7zip-gui, xmlstarlet)"
+                echo "  --all           Install all package groups"
                 echo "  --status        Show installed packages"
                 echo "  --skip          Skip package installation"
                 echo "  --help, -h      Show this help message"
@@ -79,14 +93,15 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         esac
     else
         # Interactive mode (no arguments)
-        echo "1) Essentials  2) Dev tools  3) Both  4) Status  5) Exit"
+        echo "1) Essentials  2) Dev tools  3) CLI tools  4) All  5) Status  6) Exit"
         read -r -p "Choose: " c
         case $c in
             1) install_essentials ;;
             2) install_dev ;;
-            3) install_essentials; install_dev ;;
-            4) show_status ;;
-            5) exit 0 ;;
+            3) install_cli_tools ;;
+            4) install_essentials; install_dev; install_cli_tools ;;
+            5) show_status ;;
+            6) exit 0 ;;
             *) echo "Invalid choice" ;;
         esac
     fi

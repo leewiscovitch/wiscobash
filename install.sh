@@ -6,6 +6,7 @@
 #   ./install.sh                    # Interactive installation
 #   ./install.sh --with-essentials  # Install with essential packages
 #   ./install.sh --with-dev         # Install with dev tools
+#   ./install.sh --with-cli-tools   # Install with CLI tools
 #   ./install.sh --with-all         # Install with all packages
 #   ./install.sh --no-packages      # Install without packages (non-interactive)
 #   ./install.sh --force            # Force reinstall even if already installed
@@ -28,6 +29,10 @@ while [ $# -gt 0 ]; do
             PACKAGE_MODE="dev"
             shift
             ;;
+        --with-cli-tools)
+            PACKAGE_MODE="cli-tools"
+            shift
+            ;;
         --with-all)
             PACKAGE_MODE="all"
             shift
@@ -48,6 +53,7 @@ while [ $# -gt 0 ]; do
             echo "Options:"
             echo "  --with-essentials   Install WiscoBash with essential packages"
             echo "  --with-dev          Install WiscoBash with dev tools"
+            echo "  --with-cli-tools    Install WiscoBash with CLI tools"
             echo "  --with-all          Install WiscoBash with all packages"
             echo "  --no-packages       Install WiscoBash without installing packages"
             echo "  --force             Force reinstall even if already installed"
@@ -97,13 +103,15 @@ if [ -z "$PACKAGE_MODE" ]; then
     echo "Would you like to install packages?"
     echo "1) Essential packages (git, curl, wget, vim, htop, tree, unzip, zip)"
     echo "2) Dev tools (tmux, jq, build-essential, python3, python-pip)"
-    echo "3) Both"
-    echo "4) Skip (install later with ~/wiscobash/scripts/setup/essential_packages.sh)"
-    read -r -p "Choose [1-4]: " choice
+    echo "3) CLI tools (btop, ripgrep, bat, ncdu, p7zip-gui, xmlstarlet)"
+    echo "4) All packages"
+    echo "5) Skip (install later with ~/wiscobash/scripts/setup/essential_packages.sh)"
+    read -r -p "Choose [1-5]: " choice
     case "$choice" in
         1) PACKAGE_MODE="essentials" ;;
         2) PACKAGE_MODE="dev" ;;
-        3) PACKAGE_MODE="all" ;;
+        3) PACKAGE_MODE="cli-tools" ;;
+        4) PACKAGE_MODE="all" ;;
         *) PACKAGE_MODE="skip" ;;
     esac
 fi
