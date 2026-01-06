@@ -43,3 +43,22 @@ sysinfo() {
     echo "Memory: $(free -h | awk '/^Mem:/ {print $3 " / " $2}')"
     echo "Disk: $(df -h / | awk 'NR==2 {print $3 " / " $2 " (" $5 ")"}')"
 }
+wb_update() {
+    local current_dir="$PWD"
+    echo "Updating WiscoBash from git..."
+
+    cd "$WISCOBASH_DIR" || { echo "Error: Cannot access $WISCOBASH_DIR"; return 1; }
+
+    if ! git pull; then
+        echo "Error: git pull failed"
+        cd "$current_dir" || return
+        return 1
+    fi
+
+    cd "$current_dir" || return
+
+    echo "Reloading WiscoBash..."
+    source "$HOME/.bashrc"
+
+    echo "✓ WiscoBash updated and reloaded!"
+}
