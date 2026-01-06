@@ -137,19 +137,29 @@ wb_install_single() {
 }
 
 # wb_install - Install one or more packages
-# Args: package IDs (accepts multiple)
+# Args: package IDs (accepts multiple), optional --force flag
 # Returns: 0 on success, 1 if any failed
 # Example: wb_install docker
 # Example: wb_install bat ripgrep htop
+# Example: wb_install --force ansible
 wb_install() {
-    [ $# -eq 0 ] && echo "Usage: wb_install <package> [package2 ...]" && return 1
+    [ $# -eq 0 ] && echo "Usage: wb_install [--force] <package> [package2 ...]" && return 1
 
     local failed=0
     local installed_any=false
+    local force_flag=""
+
+    # Check for --force flag
+    if [ "$1" = "--force" ]; then
+        force_flag="--force"
+        shift
+    fi
+
+    [ $# -eq 0 ] && echo "Usage: wb_install [--force] <package> [package2 ...]" && return 1
 
     # Install each package
     for pkg in "$@"; do
-        if wb_install_single "$pkg"; then
+        if wb_install_single "$pkg" $force_flag; then
             installed_any=true
         else
             failed=$((failed + 1))
