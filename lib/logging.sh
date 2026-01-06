@@ -27,22 +27,22 @@ wb_timestamp() { date '+%Y-%m-%d %H:%M:%S'; }
 wb_log() { echo "[$(wb_timestamp)] [$1] ${*:2}" >> "$WISCOBASH_LOG_FILE"; }
 
 # wb_log_info - Log informational message (shown if verbose mode enabled)
-wb_log_info() { wb_log "INFO" "$*"; $WISCOBASH_VERBOSE && echo "[INFO] $*" >&2; }
+wb_log_info() { wb_log "INFO" "$*"; $WISCOBASH_VERBOSE && echo "[INFO] $*" >&2; return 0; }
 
 # wb_log_success - Log success message (shown if verbose mode enabled)
-wb_log_success() { wb_log "SUCCESS" "$*"; $WISCOBASH_VERBOSE && echo "[✓] $*" >&2; }
+wb_log_success() { wb_log "SUCCESS" "$*"; $WISCOBASH_VERBOSE && echo "[✓] $*" >&2; return 0; }
 
 # wb_log_warning - Log warning message (shown if verbose mode enabled)
-wb_log_warning() { wb_log "WARNING" "$*"; $WISCOBASH_VERBOSE && echo "[WARNING] $*" >&2; }
+wb_log_warning() { wb_log "WARNING" "$*"; $WISCOBASH_VERBOSE && echo "[WARNING] $*" >&2; return 0; }
 
 # wb_log_error - Log error message (always shown to user)
 wb_log_error() { wb_log "ERROR" "$*"; echo "[ERROR] $*" >&2; }
 
 # wb_log_debug - Log debug message (only if debug mode enabled)
-wb_log_debug() { $WISCOBASH_DEBUG && wb_log "DEBUG" "$*" && echo "[DEBUG] $*" >&2; }
+wb_log_debug() { $WISCOBASH_DEBUG && wb_log "DEBUG" "$*" && echo "[DEBUG] $*" >&2; return 0; }
 
 # Section logging helpers
-wb_log_section_start() { wb_log "SECTION" "START: $1"; wb_log_debug "Section: $1"; }
+wb_log_section_start() { wb_log "SECTION" "START: $1"; wb_log_debug "Section: $1"; return 0; }
 wb_log_section_end() { wb_log "SECTION" "END: $1 (${2:-success})"; }
 
 # wb_log_session_start - Log session start with system info
