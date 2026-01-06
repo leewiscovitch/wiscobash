@@ -130,6 +130,10 @@ wb_install_single() {
             wb_install_vscode
             return $?
             ;;
+        virt-manager)
+            wb_install_virt_manager
+            return $?
+            ;;
     esac
 
     local name
