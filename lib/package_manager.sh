@@ -111,6 +111,15 @@ wb_install_single() {
         wb_log_section_end "Install: $pkg" "skipped"
         return 0
     fi
+
+    # Special handling for packages with custom installers
+    case "$pkg" in
+        ansible)
+            wb_install_ansible
+            return $?
+            ;;
+    esac
+
     local name
     name=$(wb_get_package_name "$pkg")
     [ -z "$name" ] && echo "✗ Unknown: $pkg" && wb_log_error "Unknown: $pkg" && return 1
@@ -172,7 +181,7 @@ wb_check() { for p in "$@"; do wb_package_installed "$p" && echo "✓ $p" || ech
 wb_packages_list() {
     echo "Available: git curl wget vim htop tree tmux docker docker-compose"
     echo "           python3 python-pip nodejs npm build-essential jq"
-    echo "           unzip zip rsync openssh-server sqlite"
+    echo "           unzip zip rsync openssh-server sqlite ansible"
     echo "           btop ripgrep bat ncdu p7zip xmlstarlet micro eza"
 }
 

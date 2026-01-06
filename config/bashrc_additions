@@ -4,6 +4,9 @@ export WISCOBASH_DIR="$HOME/wiscobash"
 # Add WiscoBash bin to PATH
 export PATH="$WISCOBASH_DIR/bin:$PATH"
 
+# Add user's local bin to PATH (for pip-installed tools like ansible)
+[ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
+
 # Source distro detection first (required by logging)
 [ -f "$WISCOBASH_DIR/lib/distro_detect.sh" ] && source "$WISCOBASH_DIR/lib/distro_detect.sh"
 # Source logging and start session

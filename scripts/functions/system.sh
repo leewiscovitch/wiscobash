@@ -34,6 +34,45 @@ backup() {
     [ ! -e "$1" ] && echo "File not found: $1" && return 1
     cp "$1" "$1.backup.$(date +%Y%m%d_%H%M%S)"
 }
+mvx() {
+    [ $# -lt 2 ] && echo "Usage: mvx <source> <destination>" && return 1
+    rsync -ah --info=progress2 --remove-source-files "$1" "$2"
+    # Remove empty source directories
+    find "$1" -type d -empty -delete 2>/dev/null
+}
+tailx() {
+    local file="$1"
+
+    # If no file specified, use distro-specific syslog
+    if [ -z "$file" ]; then
+        case "$DISTRO_FAMILY" in
+            debian)
+                file="/var/log/syslog"
+                ;;
+            rhel|arch)
+                file="/var/log/messages"
+                ;;
+            *)
+                # Fallback: try to find whichever exists
+                if [ -f "/var/log/syslog" ]; then
+                    file="/var/log/syslog"
+                elif [ -f "/var/log/messages" ]; then
+                    file="/var/log/messages"
+                else
+                    echo "Error: Could not find system log file"
+                    return 1
+                fi
+                ;;
+        esac
+    fi
+
+    if [ -f "$file" ]; then
+        sudo tail -F -n 1000 "$file"
+    else
+        echo "Error: File '$file' does not exist"
+        return 1
+    fi
+}
 sysinfo() {
     echo "=== System Info ==="
     echo "Host: $(hostname)"

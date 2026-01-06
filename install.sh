@@ -102,7 +102,7 @@ if [ -z "$PACKAGE_MODE" ]; then
     echo ""
     echo "Would you like to install packages?"
     echo "1) Essential packages (git, curl, wget, htop, tree, unzip, zip)"
-    echo "2) Dev tools (tmux, jq, build-essential, python3, python-pip, micro)"
+    echo "2) Dev tools (tmux, jq, build-essential, python3, python-pip, micro, ansible)"
     echo "3) CLI tools (btop, ripgrep, bat, ncdu, p7zip, xmlstarlet, eza)"
     echo "4) All packages"
     echo "5) Skip (install later with ~/wiscobash/scripts/setup/essential_packages.sh)"
@@ -116,14 +116,27 @@ if [ -z "$PACKAGE_MODE" ]; then
     esac
 fi
 
+# Load WiscoBash libraries (needed for git check and package installation)
+echo ""
+echo "Loading WiscoBash libraries..."
+source "$WISCOBASH_DIR/config/bashrc_additions"
+
+# Ensure git is always installed (required for wb_update)
+if ! command -v git >/dev/null 2>&1; then
+    echo ""
+    echo "Installing git (required for WiscoBash updates)..."
+    wb_install git
+fi
+
 # Install packages based on selection
 if [ "$PACKAGE_MODE" != "skip" ]; then
     echo ""
-    echo "Loading WiscoBash libraries..."
-    source "$WISCOBASH_DIR/config/bashrc_additions"
-    echo ""
     "$WISCOBASH_DIR/scripts/setup/essential_packages.sh" "--$PACKAGE_MODE"
 fi
+
+# Configure git with user preferences
+echo ""
+bash "$WISCOBASH_DIR/scripts/setup/git_config.sh"
 
 echo ""
 echo "✓ Installation complete!"
