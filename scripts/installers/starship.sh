@@ -97,9 +97,22 @@ wb_install_starship() {
     local config_dir="$HOME/.config"
     mkdir -p "$config_dir"
 
-    # Copy WiscoBash custom theme
+    # Use gruvbox-rainbow preset and customize it
     if command -v starship >/dev/null 2>&1; then
-        \cp -f "$WISCOBASH_DIR/config/starship.toml" "$config_dir/starship.toml"
+        # Generate gruvbox-rainbow preset
+        starship preset gruvbox-rainbow -o "$config_dir/starship.toml"
+
+        # Customize: full path display
+        sed -i 's/^truncation_length = .*/truncation_length = 0/' "$config_dir/starship.toml"
+        sed -i '/^\[directory\]/a truncate_to_repo = false' "$config_dir/starship.toml"
+
+        # Customize: 12-hour time format
+        sed -i 's/^time_format = .*/time_format = "%I:%M %p"/' "$config_dir/starship.toml"
+        sed -i '/^time_format/a use_12hr = true' "$config_dir/starship.toml"
+
+        # Customize: show conda base environment
+        sed -i '/^\[conda\]/a ignore_base = false' "$config_dir/starship.toml"
+
         echo "✓ Installed WiscoBash custom theme"
         echo "  - Gruvbox colors with powerline arrows"
         echo "  - Conda environment visible"
